@@ -25,20 +25,6 @@ A aplicação foi estruturada como uma Web API RESTful de alta manutenibilidade,
 
 ---
 
-## Rotas e Navegação (Endpoints)
-
-| Funcionalidade | Método | Endpoint | Descrição | Processamento |
-| :--- | :---: | :--- | :--- | :---: |
-| **Cadastrar Cliente PF** | `POST` | `/api/clientes/pf` | Cadastro de pessoa física com CPF único. | Síncrono |
-| **Cadastrar Cliente PJ** | `POST` | `/api/clientes/pj` | Cadastro de pessoa jurídica com CNPJ único. | Síncrono |
-| **Buscar Cliente** | `GET` | `/api/clientes/{id}` | Retorna dados do cliente e sua agência. | Síncrono |
-| **Cadastrar Agência** | `POST` | `/api/agencias` | Registra uma nova agência no sistema. | Síncrono |
-| **Solicitar Contratação** | `POST` | `/api/contratacoes` | Valida dados e publica na fila do RabbitMQ. | **Assíncrono** |
-| **Status Contratação** | `GET` | `/api/contratacoes/{id}` | Consulta o resultado (Aprovada/Recusada). | Síncrono |
-| **Health Check** | `GET` | `/health` | Verifica saúde da API e do banco Oracle. | Técnico |
-
----
-
 ## Produto Bancário Escolhido e Justificativa
 Foram implementados os produtos de **Consórcio** e **Empréstimo**.
 * **Justificativa:** A escolha visa demonstrar a capacidade do sistema em lidar com regras de negócio distintas. O **Consórcio** exige cálculos de parcelamento linear e gestão de grupos, enquanto o **Empréstimo** implementa uma análise de risco baseada em *score* de crédito e cálculos de juros compostos, evidenciando a robustez do processamento assíncrono para diferentes domínios financeiros.
@@ -55,27 +41,6 @@ O projeto utiliza a abordagem de **Fila Única (`contratacao-solicitada`) com Di
 O diagrama reflete a herança da entidade abstrata `Cliente` para `PessoaFisica` e `PessoaJuridica`, além da relação entre `Agencia`, `Cliente` e `Contratacao`.
 
 ![Diagrama de Classes](ProjetoBanco.API/docs/diagrama-classes.png)
-
----
-
-## Testes Automatizados
-O projeto possui testes unitários e integrados utilizando `WebApplicationFactory`, `Moq` e banco em memória `InMemory`.
-* **Execução:** `dotnet test`
-
-![Resultado dos Testes](ProjetoBanco.API/docs/tests.png)
-
-## Evidências de Funcionamento
-
-### Painel RabbitMQ (Fila e Unacked)
-Abaixo, a comprovação do recebimento de mensagens e o estado da fila:
-![RabbitMQ](ProjetoBanco.API/docs/rabbit.png)
-
-
-![RabbitMQ](ProjetoBanco.API/docs/unacked.png)
-
-### Swagger e Aprovação
-Exemplo de contratação processada com sucesso (`APROVADA`):
-![Swagger](ProjetoBanco.API/docs/swagger.png)
 
 ---
 
@@ -108,4 +73,37 @@ Exemplo de contratação processada com sucesso (`APROVADA`):
 
 ---
 
-**Nota sobre Observabilidade:** A API está configurada com OpenTelemetry enviando traces para o Jaeger (porta 4318).
+## Rotas e Navegação (Endpoints)
+
+| Funcionalidade | Método | Endpoint | Descrição | Processamento |
+| :--- | :---: | :--- | :--- | :---: |
+| **Cadastrar Cliente PF** | `POST` | `/api/clientes/pf` | Cadastro de pessoa física com CPF único. | Síncrono |
+| **Cadastrar Cliente PJ** | `POST` | `/api/clientes/pj` | Cadastro de pessoa jurídica com CNPJ único. | Síncrono |
+| **Buscar Cliente** | `GET` | `/api/clientes/{id}` | Retorna dados do cliente e sua agência. | Síncrono |
+| **Cadastrar Agência** | `POST` | `/api/agencias` | Registra uma nova agência no sistema. | Síncrono |
+| **Solicitar Contratação** | `POST` | `/api/contratacoes` | Valida dados e publica na fila do RabbitMQ. | **Assíncrono** |
+| **Status Contratação** | `GET` | `/api/contratacoes/{id}` | Consulta o resultado (Aprovada/Recusada). | Síncrono |
+| **Health Check** | `GET` | `/health` | Verifica saúde da API e do banco Oracle. | Técnico |
+
+---
+
+## Testes Automatizados
+O projeto possui testes unitários e integrados utilizando `WebApplicationFactory`, `Moq` e banco em memória `InMemory`.
+* **Execução:** `dotnet test`
+
+![Resultado dos Testes](ProjetoBanco.API/docs/tests.png)
+
+## Evidências de Funcionamento
+
+### Painel RabbitMQ (Fila e Unacked)
+Abaixo, a comprovação do recebimento de mensagens e o estado da fila:
+![RabbitMQ](ProjetoBanco.API/docs/rabbit.png)
+
+
+![RabbitMQ](ProjetoBanco.API/docs/unacked.png)
+
+### Swagger e Aprovação
+Exemplo de contratação processada com sucesso (`APROVADA`):
+![Swagger](ProjetoBanco.API/docs/swagger.png)
+
+---
