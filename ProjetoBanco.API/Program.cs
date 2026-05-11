@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using ProjetoBanco.API.Data;
 using ProjetoBanco.API.Messaging;
@@ -37,9 +38,12 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(t => t
         .AddAspNetCoreInstrumentation()
         .AddEntityFrameworkCoreInstrumentation()
-        .AddOtlpExporter(o =>
+        .AddOtlpExporter(o => 
+        {
             o.Endpoint = new Uri(
-                builder.Configuration["OpenTelemetry:JaegerEndpoint"] ?? "http://localhost:4317"))
+                builder.Configuration["OpenTelemetry:JaegerEndpoint"] ?? "http://localhost:4317");
+            o.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        })
         .AddConsoleExporter()
     );
 

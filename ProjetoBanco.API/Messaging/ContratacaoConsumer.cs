@@ -66,6 +66,8 @@ public class ContratacaoConsumer : BackgroundService {
                 contratacao.DataProcessamento = DateTime.UtcNow;
                 await db.SaveChangesAsync(stoppingToken);
 
+                // Delay para demonstração do Unacked no painel
+                await Task.Delay(5000);
                 // ACK manual — só confirma após salvar com sucesso
                 _channel!.BasicAck(ea.DeliveryTag, false);
 
