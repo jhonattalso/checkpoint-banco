@@ -34,17 +34,22 @@ if (!isTest)
     health.AddDbContextCheck<AppDbContext>("oracle-db");
 
 builder.Services.AddOpenTelemetry()
-    .ConfigureResource(r => r.AddService("ProjetoBanco.API"))
+    .ConfigureResource(r => r
+        .AddService("ProjetoBanco.API")
+        .AddAttributes(new Dictionary<string, object> {
+            ["deployment.environment"] = builder.Environment.EnvironmentName
+        }))
     .WithTracing(t => t
+        .AddSource("ProjetoBanco.API") // Ouvir a fonte da sua API
         .AddAspNetCoreInstrumentation()
         .AddEntityFrameworkCoreInstrumentation()
-        .AddOtlpExporter(o => 
-        {
-            o.Endpoint = new Uri(
-                builder.Configuration["OpenTelemetry:JaegerEndpoint"] ?? "http://localhost:4317");
-            o.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        .AddHttpClientInstrumentation() // Importante para chamadas externas
+        .AddOtlpExporter(o => {
+            // Forçamos o uso da porta 4318 com protocolo HTTP
+            o.Endpoint = new Uri(builder.Configuration["OpenTelemetry:JaegerEndpoint"] ?? "http://localhost:4318/v1/traces");
+            o.Protocol = OtlpExportProtocol.HttpProtobuf;
         })
-        .AddConsoleExporter()
+        .AddConsoleExporter() // Mantemos para debug no terminal
     );
 
 builder.Services.AddSingleton<IContratacaoProducer, ContratacaoProducer>();
